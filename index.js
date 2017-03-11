@@ -16,9 +16,9 @@ io.sockets.on('connection', function(socket) {
 
     //listens for 'send message' event from client
     socket.on('send message', function(data, callback) {
-        var msg = data.trim();
-        if (msg.substr(0, 3) === '/w ') {
-            msg = msg.substr(3);
+        var msg = data.trim(); //gets rid of white spaces on the returned string
+        if (msg.substr(0, 3) === '/w ') { //parses first 3 string chars
+            msg = msg.substr(3); //parses the rest of the message, past '/w'
             var ind = msg.indexOf(' ');
             if (ind !== -1) {
                 var name = msg.substr(0, ind);
