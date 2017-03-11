@@ -1,0 +1,54 @@
+body {
+    color: white;
+    font-size: 18px;
+    font-family: 'Raleway', sans-serif;
+}
+#chat {
+    height: 800px;
+    width: 800px;
+    overflow: auto;
+    background-color: #0d0d0d;
+    padding: 10px;
+
+}
+
+#message {
+    width: 95%;
+    display: inline-block;
+}
+#contentWrap {
+    display: none;
+
+
+}
+#chatWrap {
+    float: left;
+    margin-left: 20px;
+    box-shadow: 10px 10px 5px black;
+}
+
+#nickNameBtn {
+    margin-top: 10px;
+}
+
+#chatContainer {
+    position: fixed; /* or absolute */
+    top: 30%;
+    left: 30%
+
+}
+
+#usersSection{
+    margin-top: 50px;
+    color: yellow;
+}
+#usersHeader {
+    color: lawngreen;
+}
+
+#submitBtn {
+    display: none;
+}
+#chatHeader{
+    text-decoration: underline;
+    font-size: 20px;

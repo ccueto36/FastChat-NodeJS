@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+    <title>FastChat - Made with Socket.IO</title>
+        <!-- Latest compiled and minified CSS -->
+      <link rel="stylesheet" href="https://bootswatch.com/slate/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+      <link rel="stylesheet" href="/css/style.css">
+  </head>
+
+
+<body>
+    <div id="chatContainer" class="container">
+    <div id="header" class="jumbotron">
+    <h1>Welcome to FastChat</h1>
+        <p>Chatting has never been easier.</p>
+    </div>
+    <div id="nickWrap">
+        <form id="setNick">
+            <div class="row">
+                <div id="nick-form-group" class="form-group col-xs-4 col-lg-4">
+                    <p id="nickError"></p>
+
+                    <label for="code">Enter a nickname: </label>
+                    <input class="form-control" type="text" id="nickName" placeholder="Enter desired nickname" autocomplete="off">
+                    <input class="btn btn-primary" type="submit" id="nickNameBtn">
+
+                </div>
+            </div>
+        </form>
+    </div>
+    </div>
+
+    <div id="contentWrap">
+
+        <div id="chatWrap">
+            <div id="chat"><span id="chatHeader">Chat History</span><br/></div>
+            <form id="send-message">
+                    <input class="form-control" type="text" placeholder="Enter message and Press Enter" size="40" id="message" autocomplete="off">
+                        <i class="fa fa-comments" aria-hidden="true"></i></input>
+                    <input id="submitBtn" class="btn btn-success" type="submit" autocomplete="off">
+            </form>
+        </div>
+        <div id="usersSection">
+            <div id="usersHeader">
+                <h4>&nbsp;&nbsp;&nbsp;<i class="fa fa-users" aria-hidden="true">&nbsp;</i><span style="text-decoration: underline;">Connected Users</span></h4>
+            </div>
+            <div id="users"></div>
+        </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    jQuery(function($){
+        var socket = io.connect();
+        var $nickForm = $('#setNick');
+        var $nickError = $('#nickError');
+        var $nickBox = $('#nickName');
+        var $users = $('#users');
+        var $messageForm = $('#send-message');
+        var $messageBox = $('#message');
+        var $chat = $('#chat');
+
+        $nickForm.submit(function(e){
+            e.preventDefault();
+            socket.emit('new user', $nickBox.val(), function(nickname){
+
+                    if(nickname.isAvailable)
+                    {
+                        $('#chatContainer').hide();
+                        $('#contentWrap').show();
+                        $('#message').focus();
+                    }
+                    else
+                    {
+
+                       $nickError.html('<span style="color:pink">Username already taken. Try another one.</span>');
+                    }
+            });
+            $nickBox.val('');
+
+        });
+
+        socket.on('invalid nickname', function(msg){
+            $nickError.html('<span style="color:pink">' + msg + '</span>');
+        });
+
+        socket.on('usernames', function(users){
+            var html = '';
+            for(i = 0; i < users.length; i++)
+                {
+                    html += '&nbsp;&nbsp;&nbsp;&nbsp;<span><i class="fa fa-user" aria-hidden="true"></i>&nbsp;'  + users[i] + '</span><br/>';
+                }
+            $users.html(html);
+
+        });
+
+        $messageForm.submit(function(e){
+            e.preventDefault();
+            socket.emit('send message', $messageBox.val(), function(data){
+                 $chat.append('<b><span style="color: red";' + data + "</span><br/>");
+            });
+            $messageBox.val('');
+        });
+
+        socket.on('new message', function(data){
+            $chat.append('<b><span style="color: ' + data.color + ' "> ' + data.nick + ": </b>" + data.msg + "</span><br/>");
+            autoScrollChat();
+
+
+        });
+
+        socket.on('whisper', function(data){
+             $chat.append('<b>[whisper]&nbsp;<em><span style="color: red">' + data.nick + ': </b>' + data.msg + '</em></span><br/>');
+        });
+
+        socket.on('system message', function(msg){
+            $chat.append('<em style="color:yellow">' + msg + '</em>');
+            autoScrollChat();
+        });
+
+        function autoScrollChat(){
+            $('#chat').animate({
+            scrollTop: $('#chat')[0].scrollHeight});
+        };
+
+
+
+    });
+
+
+
+
+</script>
+</body>
+</html>
