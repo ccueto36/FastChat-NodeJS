@@ -7,6 +7,7 @@ jQuery(function($) {
     var $messageForm = $('#send-message');
     var $messageBox = $('#message');
     var $chat = $('#chat');
+    var $comments_symbol = $('#comments_symbol');
 
     $nickForm.submit(function(e) {
         e.preventDefault();
@@ -45,6 +46,14 @@ jQuery(function($) {
         $messageBox.val('');
     });
 
+    $comments_symbol.css('cursor', 'pointer');
+    $comments_symbol.click(function(e) {
+        socket.emit('send message', $messageBox.val(), function(data) {
+            $chat.append('<b><span style="color: red";' + data + "</span><br/>");
+        });
+        $messageBox.val('');
+    });
+
     socket.on('new message', function(data) {
         $chat.append('<b><span style="color: ' + data.color + ' "> ' + data.nick + ": </b>" + data.msg + "</span><br/>");
         autoScrollChat();
@@ -52,7 +61,7 @@ jQuery(function($) {
     });
 
     socket.on('whisper', function(data) {
-        $chat.append('<b>[whisper]&nbsp;<em><span style="color: red">' + data.nick + ': </b>' + data.msg + '</em></span><br/>');
+        $chat.append('<b><em><span style="color: purple">[w] ' + data.nick + ': </b>' + data.msg + '</em></span><br/>');
     });
 
     socket.on('system message', function(msg) {

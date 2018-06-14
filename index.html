@@ -23,7 +23,7 @@
                     <p id="nickError"></p>
 
                     <label for="code">Enter a nickname: </label>
-                    <input class="form-control" type="text" id="nickName" placeholder="Enter desired nickname" autocomplete="off">
+                    <input class="form-control" type="text" id="nickName" autofocus="autofocus" placeholder="Enter desired nickname" autocomplete="off">
                     <input class="btn btn-primary" type="submit" id="nickNameBtn">
 
                 </div>
@@ -37,8 +37,8 @@
         <div id="chatWrap">
             <div id="chat"><span id="chatHeader">Chat History</span><br/></div>
             <form id="send-message">
-                    <input class="form-control" type="text" placeholder="Enter message and Press Enter" size="40" id="message" autocomplete="off">
-                        <i class="fa fa-comments" aria-hidden="true"></i></input>
+                    <input class="form-control" type="text" placeholder="Enter message and Press Enter" autofocus="autofocus" size="40" id="message" autocomplete="off">
+                    <i id="comments_symbol" class="fa fa-comments" aria-hidden="true"></i></input>
                     <input id="submitBtn" class="btn btn-success" type="submit">
             </form>
         </div>
