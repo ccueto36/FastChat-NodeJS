@@ -65,7 +65,7 @@ jQuery(function($) {
     });
 
     socket.on('system message', function(msg) {
-        $chat.append('<em style="color:yellow">' + msg + '</em>');
+        $chat.append('<em style="color:yellow">' + msg + '</em><br/>');
         autoScrollChat();
     });
 

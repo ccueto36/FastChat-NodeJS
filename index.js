@@ -16,27 +16,33 @@ io.sockets.on('connection', function(socket) {
     //listens for 'send message' event from client
     socket.on('send message', function(data, callback) {
         var msg = data.trim(); //gets rid of white spaces on the returned string
-        if (isWhisper(msg)) { //determines if it's a Whisper message 
+        if (isWhisper(msg)) { //determines if it's a Whisper message
             msg = msg.substr(3); //parses the rest of the message, past '/w'
             var ind = msg.indexOf(' ');
             if (ind !== -1) {
                 var name = msg.substr(0, ind);
                 var msg = msg.substr(ind + 1);
-                //echo message to the whisper originator
-                debugger;
-                users[socket.nickname].emit('whisper', {
-                    msg: msg,
-                    nick: socket.nickname
-                });
-                if (name in users) {
-                    users[name].emit('whisper', {
+                if(name === socket.nickname){
+                    socket.emit('system message', "You cannot whisper to yourself. That'd be weird");
+                }
+                else {
+                    socket.emit('whisper', {
                         msg: msg,
                         nick: socket.nickname
                     });
+
+                    if (name in users) {
+                        users[name].emit('whisper', {
+                            msg: msg,
+                            nick: socket.nickname
+                        });
+                    }
+                    else {
+                        callback('Error. Enter a valid user.');
+                    }
                     serverLog(`${socket.nickname} whispered ${name}: ${msg}`); //server message
-                } else {
-                    callback('Error. Enter a valid user.');
-                }
+                
+                } 
             } else {
                 callback('Please enter a message for your whisper.');
             }
@@ -73,7 +79,7 @@ io.sockets.on('connection', function(socket) {
             socket.nickColor = assignRandomColor();
             users[socket.nickname] = socket;
             io.sockets.emit('system message', '<span style="color: ' + socket.nickColor + ';">' +
-                socket.nickname + '</span> <span style="color: yellow;">has connected.</span><br/>');
+                socket.nickname + '</span> <span style="color: yellow;">has connected.</span>');
             serverLog(`${socket.nickname} has logged in`); //server message
             updateNicknames();
         }
@@ -83,7 +89,7 @@ io.sockets.on('connection', function(socket) {
     function isWhisper(msg){
         return (msg.substr(0,3) === '/w ');
     }
-    
+
     function updateNicknames() {
         io.sockets.emit('usernames', Object.keys(users))
     };
@@ -94,7 +100,7 @@ io.sockets.on('connection', function(socket) {
             "green", "cyan", "#87CEFA",
             "#6B8E23", "#9ACD32", "aquamarine"
         ];
-        var rand = Math.floor(Math.random() * 11);
+        var rand = Math.floor(Math.random() * colors.length);
         var chosen = colors[rand];
         colors.splice(chosen,1);
         return chosen;
@@ -104,7 +110,7 @@ io.sockets.on('connection', function(socket) {
         if (!socket.nickname) return;
         delete users[socket.nickname];
         io.sockets.emit('system message', '<span style="color: ' + socket.nickColor + ';">' +
-            socket.nickname + '</span> has disconnected.<br/>');
+            socket.nickname + '</span> has disconnected.');
         updateNicknames();
         serverLog(`${socket.nickname} disconnected`);
     });
