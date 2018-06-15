@@ -30,9 +30,11 @@ jQuery(function($) {
     });
 
     socket.on('usernames', function(users) {
-        users.forEach(function(user) {
-            $users.append('&nbsp;&nbsp;&nbsp;&nbsp;<span><i class="fa fa-user" aria-hidden="true"></i>&nbsp;' + user + '</span><br/>');
-        });
+        var html = '';
+        for(user in users) {
+            html += `&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user" aria-hidden="true"></i><span style=color:${users[user].nickcolor}>&nbsp;${users[user].nickname}</span><br/>`;
+        };
+        $users.html(html);
     });
 
     $messageForm.submit(function(e) {
@@ -43,7 +45,6 @@ jQuery(function($) {
         $messageBox.val('');
     });
 
-    $comments_symbol.css('cursor', 'pointer');
     $comments_symbol.click(function(e) {
         socket.emit('send message', $messageBox.val(), function(data) {
             $chat.append('<b><span style="color: red";' + data + "</span><br/>");

@@ -51,7 +51,7 @@ io.sockets.on('connection', function(socket) {
             io.sockets.emit('new message', {
                 msg: data,
                 nick: socket.nickname,
-                color: socket.nickColor
+                color: socket.nickcolor
             });
         }
     });
@@ -76,9 +76,9 @@ io.sockets.on('connection', function(socket) {
                 length: nickname.length
             });
             socket.nickname = nickname;
-            socket.nickColor = assignRandomColor();
+            socket.nickcolor = assignRandomColor();
             users[socket.nickname] = socket;
-            io.sockets.emit('system message', '<span style="color: ' + socket.nickColor + ';">' +
+            io.sockets.emit('system message', '<span style="color: ' + socket.nickcolor + ';">' +
                 socket.nickname + '</span> <span style="color: yellow;">has connected.</span>');
             serverLog(`${socket.nickname} has logged in`); //server message
             updateNicknames();
@@ -91,8 +91,14 @@ io.sockets.on('connection', function(socket) {
     };
 
     function updateNicknames() {
-        debugger;
-        io.sockets.emit('usernames', Object.keys(users));
+        var result = {};
+        for(user in users){
+            var data = {};
+            data.nickname = users[user].nickname;
+            data.nickcolor = users[user].nickcolor;
+            result[users[user].nickname] = data;
+        }
+        io.sockets.emit('usernames', result);
     };
 
     function assignRandomColor() {
@@ -110,7 +116,7 @@ io.sockets.on('connection', function(socket) {
     socket.on('disconnect', function(data) {
         if (!socket.nickname) return;
         delete users[socket.nickname];
-        io.sockets.emit('system message', '<span style="color: ' + socket.nickColor + ';">' +
+        io.sockets.emit('system message', '<span style="color: ' + socket.nickcolor + ';">' +
             socket.nickname + '</span> has disconnected.');
         updateNicknames();
         serverLog(`${socket.nickname} disconnected`);

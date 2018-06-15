@@ -1,7 +1,9 @@
+
+@import url('https://fonts.googleapis.com/css?family=Slabo+27px');
 body {
     color: white;
     font-size: 18px;
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Slabo 27px', sans-serif;
 }
 #chat {
     height: 800px;
@@ -35,7 +37,10 @@ body {
     position: fixed; /* or absolute */
     top: 30%;
     left: 30%
+}
 
+#comments_symbol {
+    cursor: pointer;
 }
 
 #usersSection{
