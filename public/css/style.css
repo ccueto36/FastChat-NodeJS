@@ -1,9 +1,9 @@
 
-@import url('https://fonts.googleapis.com/css?family=Slabo+27px');
+@import url('https://fonts.googleapis.com/css?family=Nunito');
 body {
     color: white;
     font-size: 18px;
-    font-family: 'Slabo 27px', sans-serif;
+    font-family: 'Nunito', sans-serif;
 }
 #chat {
     height: 800px;
