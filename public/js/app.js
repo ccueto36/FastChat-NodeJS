@@ -30,12 +30,9 @@ jQuery(function($) {
     });
 
     socket.on('usernames', function(users) {
-        var html = '';
-        for (i = 0; i < users.length; i++) {
-            html += '&nbsp;&nbsp;&nbsp;&nbsp;<span><i class="fa fa-user" aria-hidden="true"></i>&nbsp;' + users[i] + '</span><br/>';
-        }
-        $users.html(html);
-
+        users.forEach(function(user) {
+            $users.append('&nbsp;&nbsp;&nbsp;&nbsp;<span><i class="fa fa-user" aria-hidden="true"></i>&nbsp;' + user + '</span><br/>');
+        });
     });
 
     $messageForm.submit(function(e) {

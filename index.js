@@ -86,12 +86,13 @@ io.sockets.on('connection', function(socket) {
 
     });
 
-    function isWhisper(msg){
+    function isWhisper(msg) {
         return (msg.substr(0,3) === '/w ');
-    }
+    };
 
     function updateNicknames() {
-        io.sockets.emit('usernames', Object.keys(users))
+        debugger;
+        io.sockets.emit('usernames', Object.keys(users));
     };
 
     function assignRandomColor() {
@@ -104,7 +105,7 @@ io.sockets.on('connection', function(socket) {
         var chosen = colors[rand];
         colors.splice(chosen,1);
         return chosen;
-    }
+    };
 
     socket.on('disconnect', function(data) {
         if (!socket.nickname) return;
