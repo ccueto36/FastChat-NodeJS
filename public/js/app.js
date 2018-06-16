@@ -57,7 +57,7 @@ jQuery(function($) {
         var n = d.toString();
         var formatted = n.substr(3,18);
         $chat.append(`<b><span style="color:${data.color};">${data.nick}: </b>${data.msg}</span>
-        <p style="font-size: 10px; margin-bottom: 0;">${formatted}</p>`);
+        <p style="font-size: 9px; margin-bottom: 0;">${formatted}</p>`);
         autoScrollChat();
 
     });
