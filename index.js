@@ -3,17 +3,21 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var path = require('path');
+const DEFAULT_PORT = 3000;
 var users = {};
 
+//sends 'index.html' to default url path 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
-
+//tells express what path contains static files
 app.use(express.static(path.join(__dirname + '/public')));
 
+//listens for 'connection' event from client
 io.sockets.on('connection', function(socket) {
 
-    //listens for 'send message' event from client
+    /*Listens for 'send message' event from client. Message from
+    client can be either a regular message or a whisper message*/
     socket.on('send message', function(data, callback) {
         var msg = data.trim(); //gets rid of white spaces on the returned string
         if (isWhisper(msg)) { //determines if it's a Whisper message
@@ -56,8 +60,6 @@ io.sockets.on('connection', function(socket) {
         }
     });
 
-    
-
     //listens for 'new user' event from client
     socket.on('new user', function(nickname, callback) {
 
@@ -83,13 +85,14 @@ io.sockets.on('connection', function(socket) {
             serverLog(`${socket.nickname} has logged in`); //server message
             updateNicknames();
         }
-
     });
-
+    //checks if message is a whisper message
     function isWhisper(msg) {
         return (msg.substr(0,3) === '/w ');
     };
-
+    /*strips 'users' object's nickname and nickcolor
+    properties and returns it to client to show currently
+    logged in users via 'usernames' sockets emit */
     function updateNicknames() {
         var result = {};
         for(user in users){
@@ -101,6 +104,9 @@ io.sockets.on('connection', function(socket) {
         io.sockets.emit('usernames', result);
     };
 
+    /* Assigns a random color to new users to differentiate 
+    users. When a color from the array gets used, it gets
+    deleted from the list so next user gets a new color */
     function assignRandomColor() {
         var colors = ["#ff8080", "aqua", "coral",
             "darkorange", "lightgreen",
@@ -112,7 +118,9 @@ io.sockets.on('connection', function(socket) {
         colors.splice(chosen,1);
         return chosen;
     };
-
+    /*Listens for 'disconnect' event from client and deletes
+    the user from 'users' object. Also sends system message
+    to chat to notify connected users */
     socket.on('disconnect', function(data) {
         if (!socket.nickname) return;
         delete users[socket.nickname];
@@ -122,11 +130,11 @@ io.sockets.on('connection', function(socket) {
         serverLog(`${socket.nickname} disconnected`);
     });
 });
-
+//function to log events to server
 function serverLog(msg){
     console.log(`>> ${msg}`);
 }
-
-server.listen(3000, function() {
+//listens for server connections from PORT number
+server.listen(DEFAULT_PORT, function() {
     serverLog('Listening on port 3000'); //server message
 });
