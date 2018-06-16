@@ -62,13 +62,18 @@ io.sockets.on('connection', function(socket) {
         return chosen;
     };
     
+    /* Sets user's status to 'away' */
     function handleAwayMode(){
         users[socket.nickname].status = 'away';
+        serverLog(`${socket.nickname} is now on Away mode`);
         updateNicknames();
     }
-
+    /* Sets user's status to 'available' if it's currently set to 'away' */
     function handleExitAwayMode(){
-        users[socket.nickname].status = 'available';
+        if(users[socket.nickname].status === 'away'){
+            users[socket.nickname].status = 'available';
+            serverLog(`${socket.nickname} is now on Available mode`);
+        }
         updateNicknames();
     }
 

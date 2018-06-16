@@ -26,7 +26,7 @@ jQuery(function($) {
 
     });
     /* -----Start of Away Mode Logic------- */
-    var idleInterval = setInterval(timerIncrement, 60000);
+    var idleInterval = setInterval(timerIncrement, 300000);
     $messageBox.keypress(function(){
         idleTime = 0;
         socket.emit('exit away mode');
@@ -48,7 +48,7 @@ jQuery(function($) {
         var html = '';
         for(user in users) {
             var status = users[user].status;
-            var circleColor = status === 'available' ? 'lime' : 'yellow';
+            var circleColor = status === 'available' ? 'lime' : status === 'away' ? 'yellow' : 'unknown';
             html += `&nbsp;&nbsp;&nbsp;&nbsp;<i style="color:${circleColor};" class="fa fa-circle" aria-hidden="true"></i>
             <span style=color:${users[user].nickcolor}>&nbsp;${users[user].nickname}</span><br/>`;
         };

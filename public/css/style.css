@@ -11,7 +11,6 @@ body {
     overflow: auto;
     background-color: #0d0d0d;
     padding: 10px;
-
 }
 
 #message {
@@ -20,8 +19,6 @@ body {
 }
 #contentWrap {
     display: none;
-
-
 }
 #chatWrap {
     float: left;
@@ -48,7 +45,7 @@ body {
     color: yellow;
 }
 #usersHeader {
-    color: lawngreen;
+    color: rgb(187, 202, 195);
 }
 
 #submitBtn {
@@ -57,3 +54,4 @@ body {
 #chatHeader{
     text-decoration: underline;
     font-size: 20px;
+}
