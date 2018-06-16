@@ -25,6 +25,20 @@ jQuery(function($) {
         $nickBox.val('');
 
     });
+    /* -----Start of Away Mode Logic------- */
+    var idleInterval = setInterval(timerIncrement, 60000);
+    $messageBox.keypress(function(){
+        idleTime = 0;
+        socket.emit('exit away mode');
+    });
+
+    function timerIncrement(){
+        idleTime = idleTime + 1;
+        if(idleTime >= 1) {
+            socket.emit('away mode');
+        }
+    }
+    /* -----End of Away Mode Logic------ */
 
     socket.on('invalid nickname', function(msg) {
         $nickError.html('<span style="color:pink">' + msg + '</span>');
@@ -33,7 +47,10 @@ jQuery(function($) {
     socket.on('usernames', function(users) {
         var html = '';
         for(user in users) {
-            html += `&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user" aria-hidden="true"></i><span style=color:${users[user].nickcolor}>&nbsp;${users[user].nickname}</span><br/>`;
+            var status = users[user].status;
+            var circleColor = status === 'available' ? 'lime' : 'yellow';
+            html += `&nbsp;&nbsp;&nbsp;&nbsp;<i style="color:${circleColor};" class="fa fa-circle" aria-hidden="true"></i>
+            <span style=color:${users[user].nickcolor}>&nbsp;${users[user].nickname}</span><br/>`;
         };
         $users.html(html);
     });

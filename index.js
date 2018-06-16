@@ -26,6 +26,12 @@ io.sockets.on('connection', function(socket) {
     //listens for 'new user' event from client
     socket.on('new user', handleNewUser);
 
+    //listens for the 'away mode' event from client
+    socket.on('away mode', handleAwayMode);
+
+    //listens for the 'exit away mode' event from client
+    socket.on('exit away mode', handleExitAwayMode);
+
     /*strips 'users' object's nickname and nickcolor
     properties and returns it to client to show currently
     logged in users via 'usernames' sockets emit */
@@ -35,6 +41,7 @@ io.sockets.on('connection', function(socket) {
             var data = {};
             data.nickname = users[user].nickname;
             data.nickcolor = users[user].nickcolor;
+            data.status = users[user].status;
             result[users[user].nickname] = data;
         }
         io.sockets.emit('usernames', result);
@@ -55,6 +62,16 @@ io.sockets.on('connection', function(socket) {
         return chosen;
     };
     
+    function handleAwayMode(){
+        users[socket.nickname].status = 'away';
+        updateNicknames();
+    }
+
+    function handleExitAwayMode(){
+        users[socket.nickname].status = 'available';
+        updateNicknames();
+    }
+
     /*Listens for 'disconnect' event from client and deletes
     the user from 'users' object. Also sends system message
     to chat to notify connected users */
@@ -84,6 +101,7 @@ io.sockets.on('connection', function(socket) {
             });
             socket.nickname = nickname;
             socket.nickcolor = assignRandomColor();
+            socket.status = 'available';
             users[socket.nickname] = socket;
             io.sockets.emit('system message', '<span style="color: ' + socket.nickcolor + ';">' +
                 socket.nickname + '</span> <span style="color: yellow;">has connected.</span>');
