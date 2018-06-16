@@ -8,6 +8,7 @@ jQuery(function($) {
     var $messageBox = $('#message');
     var $chat = $('#chat');
     var $comments_symbol = $('#comments_symbol');
+    var idleTime = 0;
 
     $nickForm.submit(function(e) {
         e.preventDefault();
