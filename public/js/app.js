@@ -26,15 +26,15 @@ jQuery(function($) {
 
     });
     /* -----Start of Away Mode Logic------- */
-    var idleInterval = setInterval(timerIncrement, 300000);
+    var idleInterval = setInterval(timerIncrement, 60000);
     $messageBox.keypress(function(){
         idleTime = 0;
         socket.emit('exit away mode');
     });
 
     function timerIncrement(){
-        idleTime = idleTime + 1;
-        if(idleTime >= 1) {
+        idleTime = idleTime + 1; //1 minute
+        if(idleTime >= 5) { //5 minutes
             socket.emit('away mode');
         }
     }

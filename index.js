@@ -4,7 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var path = require('path');
 const DEFAULT_PORT = 3000;
-var users = {};
+var usersMap = new Map();
 
 //sends 'index.html' to default url path 
 app.get('/', function(req, res) {
@@ -32,18 +32,18 @@ io.sockets.on('connection', function(socket) {
     //listens for the 'exit away mode' event from client
     socket.on('exit away mode', handleExitAwayMode);
 
-    /*strips 'users' object's nickname and nickcolor
+    /*strips 'usersMap' map's keys nickname and nickcolor
     properties and returns it to client to show currently
-    logged in users via 'usernames' sockets emit */
+    logged in usersMap via 'usernames' sockets emit */
     function updateNicknames() {
         var result = {};
-        for(user in users){
+        usersMap.forEach(function(value, key){
             var data = {};
-            data.nickname = users[user].nickname;
-            data.nickcolor = users[user].nickcolor;
-            data.status = users[user].status;
-            result[users[user].nickname] = data;
-        }
+            data.nickname = value.nickname;
+            data.nickcolor = value.nickcolor;
+            data.status = value.status;
+            result[value.nickname] = data;
+        });
         io.sockets.emit('usernames', result);
     };
 
@@ -64,25 +64,30 @@ io.sockets.on('connection', function(socket) {
     
     /* Sets user's status to 'away' */
     function handleAwayMode(){
-        users[socket.nickname].status = 'away';
-        serverLog(`${socket.nickname} is now on Away mode`);
-        updateNicknames();
+        var status = usersMap.get(socket.nickname).status;
+        if(status != 'away'){
+            usersMap.get(socket.nickname).status = 'away';
+            serverLog(`${socket.nickname} is now on Away mode`);
+            updateNicknames();
+        }
+        
     }
     /* Sets user's status to 'available' if it's currently set to 'away' */
     function handleExitAwayMode(){
-        if(users[socket.nickname].status === 'away'){
-            users[socket.nickname].status = 'available';
+        if(usersMap.get(socket.nickname).status === 'away'){
+            usersMap.get(socket.nickname).status = 'available';
             serverLog(`${socket.nickname} is now on Available mode`);
         }
         updateNicknames();
     }
 
     /*Listens for 'disconnect' event from client and deletes
-    the user from 'users' object. Also sends system message
-    to chat to notify connected users */
+    the user from 'usersMap' object. Also sends system message
+    to chat to notify connected usersMap */
     function handleDisconnect(data){
         if (!socket.nickname) return;
-        delete users[socket.nickname];
+        usersMap.delete(socket.nickname);
+
         io.sockets.emit('system message', '<span style="color: ' + socket.nickcolor + ';">' +
             socket.nickname + '</span> has disconnected.');
         updateNicknames();
@@ -90,11 +95,12 @@ io.sockets.on('connection', function(socket) {
     }
 
     function handleNewUser(nickname, callback){
+        var nickname = nickname.trim();
         if (nickname.length == 0) {
             socket.emit('invalid nickname', "Invalid nickname. Try another.");
             return;
         }
-        if (nickname in users) {
+        if (usersMap.has(nickname)) {
             callback({
                 isAvailable: false,
                 length: nickname.length
@@ -107,7 +113,7 @@ io.sockets.on('connection', function(socket) {
             socket.nickname = nickname;
             socket.nickcolor = assignRandomColor();
             socket.status = 'available';
-            users[socket.nickname] = socket;
+            usersMap.set(socket.nickname, socket);
             io.sockets.emit('system message', '<span style="color: ' + socket.nickcolor + ';">' +
                 socket.nickname + '</span> <span style="color: yellow;">has connected.</span>');
             serverLog(`${socket.nickname} has logged in`); //server message
@@ -132,8 +138,8 @@ io.sockets.on('connection', function(socket) {
                             nick: socket.nickname
                         });
 
-                        if (name in users) {
-                            users[name].emit('whisper', {
+                        if (usersMap.has(name)) {
+                            usersMap.get(name).emit('whisper', {
                                 msg: msg,
                                 nick: socket.nickname
                             });
